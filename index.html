@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StarkByte Solutions – Web & App Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --red:#e0000f;
+  --red2:#ff2233;
+  --silver:#c8d0d8;
+  --silver2:#e8edf2;
+  --dark:#0a0a0c;
+  --dark2:#111116;
+  --dark3:#181820;
+  --dark4:#1e1e28;
+  --accent:#ff3344;
+  --glow:0 0 20px rgba(224,0,15,0.5);
+  --font-head:'Exo 2',sans-serif;
+  --font-body:'Rajdhani',sans-serif;
+  --font-mono:'Share Tech Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--silver2);font-family:var(--font-body);overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--dark2);}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px;}
+
+/* GLOBAL ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 10px rgba(224,0,15,0.3)}50%{box-shadow:0 0 30px rgba(224,0,15,0.8),0 0 60px rgba(224,0,15,0.3)}}
+@keyframes lineGrow{from{width:0}to{width:100%}}
+@keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-12px)}}
+@keyframes scanline{0%{top:-10%}100%{top:110%}}
+@keyframes typewriter{from{width:0}to{width:100%}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes particleFloat{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
+@keyframes borderRun{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+@keyframes countUp{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes ripple{0%{transform:scale(0);opacity:1}100%{transform:scale(4);opacity:0}}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+@keyframes neonFlicker{0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 10px var(--red),0 0 20px var(--red),0 0 40px var(--red)}20%,24%,55%{text-shadow:none}}
+@keyframes morphBorder{0%,100%{border-radius:60% 40% 30% 70% / 60% 30% 70% 40%}50%{border-radius:30% 60% 70% 40% / 50% 60% 30% 60%}}
+
+/* NAVBAR */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 40px;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,12,0.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(224,0,15,0.2);}
+.navbar.scrolled{border-bottom-color:rgba(224,0,15,0.5);box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+.nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer;}
+.nav-logo img{height:44px;width:44px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(224,0,15,0.6));}
+.nav-logo-text{font-family:var(--font-head);font-weight:800;font-size:1.3rem;letter-spacing:2px;}
+.nav-logo-text span:first-child{color:var(--silver2);}
+.nav-logo-text span:last-child{color:var(--red);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{background:none;border:none;color:var(--silver);font-family:var(--font-body);font-size:0.95rem;font-weight:600;letter-spacing:1px;padding:8px 16px;cursor:pointer;position:relative;text-transform:uppercase;transition:color 0.3s;}
+.nav-link::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:2px;background:var(--red);transition:left 0.3s,right 0.3s;}
+.nav-link:hover,.nav-link.active{color:white;}
+.nav-link:hover::after,.nav-link.active::after{left:16px;right:16px;}
+.nav-cta{background:linear-gradient(135deg,var(--red),#aa0010);border:none;color:white;font-family:var(--font-body);font-weight:700;font-size:0.9rem;letter-spacing:1px;padding:10px 22px;cursor:pointer;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all 0.3s;position:relative;overflow:hidden;}
+.nav-cta::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left 0.4s;}
+.nav-cta:hover{box-shadow:var(--glow);}
+.nav-cta:hover::before{left:100%;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:5px;}
+.hamburger span{width:24px;height:2px;background:var(--silver2);transition:all 0.3s;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:100px 40px 60px;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(224,0,15,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(224,0,15,0.05) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 4s linear infinite;}
+.hero-grid::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,var(--dark) 80%);}
+.hero-particles{position:absolute;inset:0;pointer-events:none;}
+.particle{position:absolute;width:3px;height:3px;background:var(--red);border-radius:50%;animation:particleFloat linear infinite;}
+.hero-content{position:relative;z-index:2;max-width:700px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(224,0,15,0.1);border:1px solid rgba(224,0,15,0.3);padding:6px 16px;font-family:var(--font-mono);font-size:0.8rem;color:var(--red);letter-spacing:2px;margin-bottom:24px;animation:fadeUp 0.8s ease both;}
+.hero-badge::before{content:'';width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1.5s ease infinite;}
+.hero-title{font-family:var(--font-head);font-weight:800;font-size:clamp(2.5rem,6vw,5rem);line-height:1.05;margin-bottom:20px;animation:fadeUp 0.8s 0.2s ease both;}
+.hero-title .line1{color:var(--silver2);}
+.hero-title .line2{color:var(--red);display:block;animation:neonFlicker 3s 2s infinite;}
+.hero-subtitle{font-size:1.1rem;color:var(--silver);line-height:1.7;margin-bottom:36px;animation:fadeUp 0.8s 0.4s ease both;max-width:560px;}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp 0.8s 0.6s ease both;}
+.btn-primary{background:linear-gradient(135deg,var(--red),#aa0010);border:none;color:white;font-family:var(--font-body);font-weight:700;font-size:1rem;letter-spacing:1px;padding:14px 32px;cursor:pointer;text-transform:uppercase;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all 0.3s;position:relative;overflow:hidden;}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transition:left 0.5s;}
+.btn-primary:hover{box-shadow:0 0 30px rgba(224,0,15,0.6);transform:translateY(-2px);}
+.btn-primary:hover::before{left:100%;}
+.btn-outline{background:transparent;border:2px solid rgba(224,0,15,0.5);color:var(--silver2);font-family:var(--font-body);font-weight:700;font-size:1rem;letter-spacing:1px;padding:12px 32px;cursor:pointer;text-transform:uppercase;transition:all 0.3s;}
+.btn-outline:hover{border-color:var(--red);color:white;background:rgba(224,0,15,0.1);box-shadow:0 0 20px rgba(224,0,15,0.2);}
+.hero-stats{display:flex;gap:40px;margin-top:60px;animation:fadeUp 0.8s 0.8s ease both;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--red);line-height:1;}
+.stat-label{font-size:0.8rem;color:var(--silver);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.hero-visual{position:absolute;right:5%;top:50%;transform:translateY(-50%);width:420px;height:420px;display:flex;align-items:center;justify-content:center;animation:float 4s ease-in-out infinite;}
+.hero-ring{position:absolute;border:1px solid rgba(224,0,15,0.2);border-radius:50%;}
+.hero-ring:nth-child(1){width:300px;height:300px;animation:spin 20s linear infinite;}
+.hero-ring:nth-child(2){width:380px;height:380px;animation:spin 30s linear infinite reverse;}
+.hero-ring:nth-child(3){width:420px;height:420px;border-style:dashed;animation:spin 15s linear infinite;}
+.hero-logo{width:180px;height:180px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 0 30px rgba(224,0,15,0.7));}
+.scanline{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(224,0,15,0.6),transparent);animation:scanline 3s linear infinite;pointer-events:none;}
+
+/* SECTIONS */
+section{padding:100px 40px;}
+.section-header{text-align:center;margin-bottom:70px;}
+.section-tag{font-family:var(--font-mono);font-size:0.8rem;color:var(--red);letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:12px;}
+.section-title{font-family:var(--font-head);font-weight:800;font-size:clamp(2rem,4vw,3rem);color:var(--silver2);line-height:1.1;}
+.section-title span{color:var(--red);}
+.section-line{width:60px;height:3px;background:linear-gradient(90deg,var(--red),transparent);margin:20px auto 0;position:relative;}
+.section-line::before{content:'';position:absolute;top:50%;left:0;transform:translateY(-50%);width:100%;height:3px;background:var(--red);animation:lineGrow 1s ease both;}
+
+/* SERVICES */
+.services{background:var(--dark2);}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1200px;margin:0 auto;}
+.service-card{background:var(--dark3);border:1px solid rgba(224,0,15,0.1);padding:36px 28px;position:relative;overflow:hidden;cursor:pointer;transition:all 0.4s;group:true;}
+.service-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(224,0,15,0.05),transparent);opacity:0;transition:opacity 0.4s;}
+.service-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);transform:scaleX(0);transition:transform 0.4s;}
+.service-card:hover{border-color:rgba(224,0,15,0.4);transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 30px rgba(224,0,15,0.1);}
+.service-card:hover::before{opacity:1;}
+.service-card:hover::after{transform:scaleX(1);}
+.service-icon{font-size:2.5rem;margin-bottom:20px;display:block;filter:grayscale(0);}
+.service-name{font-family:var(--font-head);font-weight:700;font-size:1.25rem;color:var(--silver2);margin-bottom:12px;letter-spacing:1px;}
+.service-desc{font-size:0.95rem;color:var(--silver);line-height:1.7;}
+.service-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;}
+.service-tag{font-family:var(--font-mono);font-size:0.7rem;color:var(--red);background:rgba(224,0,15,0.08);border:1px solid rgba(224,0,15,0.2);padding:3px 10px;letter-spacing:1px;}
+.service-arrow{position:absolute;bottom:20px;right:20px;color:var(--red);opacity:0;transition:all 0.3s;font-size:1.2rem;}
+.service-card:hover .service-arrow{opacity:1;transform:translate(4px,-4px);}
+
+/* TECH STACK */
+.tech-section{background:var(--dark);}
+.tech-track{overflow:hidden;position:relative;margin-bottom:16px;}
+.tech-track::before,.tech-track::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2;}
+.tech-track::before{left:0;background:linear-gradient(90deg,var(--dark),transparent);}
+.tech-track::after{right:0;background:linear-gradient(-90deg,var(--dark),transparent);}
+.tech-scroll{display:flex;gap:16px;width:max-content;}
+.tech-scroll.scroll-left{animation:scrollLeft 25s linear infinite;}
+.tech-scroll.scroll-right{animation:scrollRight 20s linear infinite;}
+@keyframes scrollLeft{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes scrollRight{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+.tech-pill{background:var(--dark3);border:1px solid rgba(224,0,15,0.15);padding:12px 24px;font-family:var(--font-mono);font-size:0.85rem;color:var(--silver);white-space:nowrap;transition:all 0.3s;}
+.tech-pill:hover{border-color:var(--red);color:var(--silver2);background:rgba(224,0,15,0.08);}
+.tech-pill span{margin-right:8px;}
+
+/* PORTFOLIO */
+.portfolio{background:var(--dark2);}
+.portfolio-filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:50px;}
+.filter-btn{background:transparent;border:1px solid rgba(224,0,15,0.2);color:var(--silver);font-family:var(--font-body);font-weight:600;font-size:0.85rem;letter-spacing:1px;padding:8px 20px;cursor:pointer;text-transform:uppercase;transition:all 0.3s;}
+.filter-btn.active,.filter-btn:hover{background:var(--red);border-color:var(--red);color:white;}
+.portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;max-width:1200px;margin:0 auto;}
+.portfolio-card{position:relative;overflow:hidden;cursor:pointer;background:var(--dark3);border:1px solid rgba(224,0,15,0.1);}
+.portfolio-img{width:100%;height:220px;object-fit:cover;display:flex;align-items:center;justify-content:center;transition:transform 0.5s;font-size:4rem;background:linear-gradient(135deg,var(--dark3),var(--dark4));}
+.portfolio-card:hover .portfolio-img{transform:scale(1.08);}
+.portfolio-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(224,0,15,0.2) 50%,transparent 100%);opacity:0;transition:opacity 0.4s;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;}
+.portfolio-card:hover .portfolio-overlay{opacity:1;}
+.portfolio-info{padding:20px;}
+.portfolio-title{font-family:var(--font-head);font-weight:700;font-size:1.1rem;color:var(--silver2);margin-bottom:6px;}
+.portfolio-cat{font-family:var(--font-mono);font-size:0.75rem;color:var(--red);letter-spacing:2px;text-transform:uppercase;}
+.portfolio-overlay-text{color:white;font-size:0.9rem;line-height:1.6;}
+
+/* ABOUT */
+.about{background:var(--dark);}
+.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1100px;margin:0 auto;}
+.about-img-wrap{position:relative;}
+.about-img{width:100%;max-width:380px;object-fit:cover;border:2px solid rgba(224,0,15,0.3);position:relative;z-index:2;animation:morphBorder 8s ease-in-out infinite;filter:grayscale(20%);}
+.about-img-wrap::before{content:'';position:absolute;top:20px;left:20px;right:-20px;bottom:-20px;border:1px solid rgba(224,0,15,0.2);z-index:1;}
+.about-img-wrap::after{content:'';position:absolute;top:-10px;left:-10px;width:80px;height:80px;border-top:3px solid var(--red);border-left:3px solid var(--red);}
+.about-text .section-header{text-align:left;margin-bottom:30px;}
+.about-text .section-line{margin:20px 0 0;}
+.about-desc{color:var(--silver);line-height:1.8;font-size:1rem;margin-top:24px;}
+.about-skills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+.skill-chip{background:rgba(224,0,15,0.08);border:1px solid rgba(224,0,15,0.25);color:var(--silver2);font-family:var(--font-mono);font-size:0.75rem;padding:6px 14px;letter-spacing:1px;transition:all 0.3s;}
+.skill-chip:hover{background:rgba(224,0,15,0.2);border-color:var(--red);}
+.about-info{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.info-item{display:flex;align-items:center;gap:12px;}
+.info-icon{color:var(--red);font-size:1.1rem;}
+.info-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--silver);display:block;letter-spacing:1px;}
+.info-val{font-weight:700;font-size:0.95rem;color:var(--silver2);}
+
+/* PROCESS */
+.process{background:var(--dark2);}
+.process-steps{display:flex;gap:0;max-width:1100px;margin:0 auto;position:relative;}
+.process-steps::before{content:'';position:absolute;top:40px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,var(--red),rgba(224,0,15,0.1));z-index:0;}
+.process-step{flex:1;text-align:center;position:relative;z-index:1;padding:0 16px;}
+.step-num{width:80px;height:80px;border:2px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-family:var(--font-head);font-size:1.6rem;font-weight:800;color:var(--red);background:var(--dark2);position:relative;transition:all 0.3s;}
+.step-num::before{content:'';position:absolute;inset:4px;border-radius:50%;background:rgba(224,0,15,0.05);}
+.process-step:hover .step-num{background:var(--red);color:white;box-shadow:var(--glow);}
+.step-title{font-family:var(--font-head);font-weight:700;font-size:1rem;color:var(--silver2);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
+.step-desc{font-size:0.85rem;color:var(--silver);line-height:1.6;}
+
+/* TESTIMONIALS */
+.testimonials{background:var(--dark);}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1100px;margin:0 auto;}
+.testi-card{background:var(--dark3);border:1px solid rgba(224,0,15,0.1);padding:32px;position:relative;overflow:hidden;transition:all 0.3s;}
+.testi-card::before{content:'"';position:absolute;top:-10px;left:20px;font-size:8rem;color:rgba(224,0,15,0.08);font-family:serif;line-height:1;}
+.testi-card:hover{border-color:rgba(224,0,15,0.3);transform:translateY(-4px);}
+.testi-stars{color:var(--red);font-size:0.9rem;margin-bottom:16px;letter-spacing:4px;}
+.testi-text{font-size:0.95rem;color:var(--silver);line-height:1.8;font-style:italic;margin-bottom:24px;}
+.testi-author{display:flex;align-items:center;gap:12px;}
+.testi-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--red),#aa0010);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;color:white;}
+.testi-name{font-weight:700;color:var(--silver2);font-size:0.95rem;}
+.testi-role{font-family:var(--font-mono);font-size:0.7rem;color:var(--red);letter-spacing:1px;}
+
+/* CONTACT */
+.contact{background:var(--dark2);}
+.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:70px;max-width:1100px;margin:0 auto;}
+.contact-info h3{font-family:var(--font-head);font-size:1.8rem;font-weight:700;color:var(--silver2);margin-bottom:16px;}
+.contact-info p{color:var(--silver);line-height:1.8;margin-bottom:36px;}
+.contact-items{display:flex;flex-direction:column;gap:20px;}
+.contact-item{display:flex;align-items:center;gap:16px;}
+.contact-icon{width:46px;height:46px;background:rgba(224,0,15,0.1);border:1px solid rgba(224,0,15,0.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;transition:all 0.3s;}
+.contact-item:hover .contact-icon{background:var(--red);box-shadow:var(--glow);}
+.contact-label{font-family:var(--font-mono);font-size:0.7rem;color:var(--silver);letter-spacing:2px;text-transform:uppercase;}
+.contact-val{font-weight:600;color:var(--silver2);font-size:0.95rem;}
+.contact-form{display:flex;flex-direction:column;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--red);letter-spacing:2px;text-transform:uppercase;}
+.form-input,.form-textarea{background:var(--dark3);border:1px solid rgba(224,0,15,0.2);color:var(--silver2);font-family:var(--font-body);font-size:1rem;padding:12px 16px;outline:none;transition:border-color 0.3s;}
+.form-input:focus,.form-textarea:focus{border-color:var(--red);box-shadow:0 0 15px rgba(224,0,15,0.1);}
+.form-textarea{resize:vertical;min-height:120px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* FOOTER */
+.footer{background:var(--dark);border-top:1px solid rgba(224,0,15,0.15);padding:60px 40px 30px;}
+.footer-inner{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:50px;max-width:1200px;margin:0 auto;}
+.footer-brand img{height:50px;margin-bottom:16px;filter:drop-shadow(0 0 8px rgba(224,0,15,0.4));}
+.footer-brand p{color:var(--silver);font-size:0.9rem;line-height:1.7;max-width:280px;}
+.footer-col h4{font-family:var(--font-head);font-weight:700;font-size:1rem;color:var(--silver2);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;position:relative;}
+.footer-col h4::after{content:'';position:absolute;bottom:-8px;left:0;width:30px;height:2px;background:var(--red);}
+.footer-links{display:flex;flex-direction:column;gap:10px;}
+.footer-link{background:none;border:none;color:var(--silver);font-family:var(--font-body);font-size:0.9rem;cursor:pointer;text-align:left;padding:0;transition:color 0.3s;display:flex;align-items:center;gap:8px;}
+.footer-link::before{content:'›';color:var(--red);}
+.footer-link:hover{color:var(--silver2);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.05);margin-top:50px;padding-top:24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin-left:auto;margin-right:auto;}
+.footer-copy{font-family:var(--font-mono);font-size:0.75rem;color:var(--silver);}
+.footer-copy span{color:var(--red);}
+.social-links{display:flex;gap:12px;}
+.social-btn{width:36px;height:36px;background:rgba(224,0,15,0.1);border:1px solid rgba(224,0,15,0.2);color:var(--silver);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;transition:all 0.3s;}
+.social-btn:hover{background:var(--red);border-color:var(--red);color:white;box-shadow:var(--glow);}
+
+/* TYPING CURSOR */
+.cursor{display:inline-block;width:3px;height:1em;background:var(--red);margin-left:4px;animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+
+/* MOBILE */
+@media(max-width:900px){
+  .hero-visual{display:none;}
+  .about-inner{grid-template-columns:1fr;}
+  .about-img-wrap{text-align:center;}
+  .contact-inner{grid-template-columns:1fr;}
+  .footer-inner{grid-template-columns:1fr 1fr;}
+  .process-steps{flex-direction:column;gap:30px;}
+  .process-steps::before{display:none;}
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .navbar{padding:0 20px;}
+  section{padding:70px 20px;}
+  .hero{padding:100px 20px 60px;}
+  .footer{padding:40px 20px 20px;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .footer-inner{grid-template-columns:1fr;}
+  .hero-stats{gap:24px;}
+  .portfolio-grid{grid-template-columns:1fr;}
+  .services-grid{grid-template-columns:1fr;}
+}
+
+/* PAGE TRANSITIONS */
+.page-enter{animation:fadeIn 0.5s ease both;}
+.section-reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.section-reveal.visible{opacity:1;transform:translateY(0);}
+
+/* GLITCH EFFECT */
+.glitch{position:relative;}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.glitch::before{animation:glitch1 3s infinite;color:var(--red);clip:rect(0,900px,0,0);}
+.glitch::after{animation:glitch2 3s infinite;color:cyan;clip:rect(0,900px,0,0);}
+@keyframes glitch1{0%,95%,100%{clip:rect(0,0,0,0);transform:none}96%{clip:rect(10px,500px,20px,0);transform:translate(-3px);}97%{clip:rect(40px,500px,50px,0);transform:translate(3px);}}
+@keyframes glitch2{0%,93%,100%{clip:rect(0,0,0,0);transform:none}94%{clip:rect(30px,500px,40px,0);transform:translate(3px);}95%{clip:rect(5px,500px,15px,0);transform:translate(-3px);}}
+
+/* LOADING */
+.loader{position:fixed;inset:0;background:var(--dark);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;transition:opacity 0.8s,visibility 0.8s;}
+.loader.hidden{opacity:0;visibility:hidden;}
+.loader-logo{width:80px;height:80px;object-fit:contain;animation:float 2s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(224,0,15,0.8));}
+.loader-bar{width:200px;height:3px;background:rgba(224,0,15,0.2);position:relative;overflow:hidden;}
+.loader-bar::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--red),transparent);animation:loader-scan 1.2s ease infinite;}
+@keyframes loader-scan{0%{left:-100%}100%{left:100%}}
+.loader-text{font-family:var(--font-mono);font-size:0.8rem;color:var(--red);letter-spacing:3px;animation:pulse 1s ease infinite;}
+
+/* MOBILE MENU */
+.mobile-menu{position:fixed;inset:0;background:rgba(10,10,12,0.98);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transform:translateX(100%);transition:transform 0.4s;}
+.mobile-menu.open{transform:translateX(0);}
+.mobile-nav-link{background:none;border:none;color:var(--silver2);font-family:var(--font-head);font-size:1.8rem;font-weight:700;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:color 0.3s;}
+.mobile-nav-link:hover{color:var(--red);}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ---- DATA ----
+const LOGO_SRC = "images/logo.png";
+const DEV_SRC  = "images/developer.jpg";
+
+const SERVICES = [
+  { icon:"🌐", name:"Static Websites", desc:"Fast, SEO-optimised static sites with stunning UI, perfect for portfolios, landing pages and corporate branding.", tags:["HTML5","CSS3","React","Next.js"] },
+  { icon:"⚡", name:"Dynamic Web Apps", desc:"Full-stack dynamic applications with real-time data, user authentication and powerful backend integrations.", tags:["React","Angular","Node.js",".NET Core"] },
+  { icon:"📱", name:"Mobile Applications", desc:"Cross-platform mobile apps for iOS & Android, built with modern frameworks delivering native-like performance.", tags:["React Native","Flutter","PWA"] },
+  { icon:"📐", name:"Responsive Design", desc:"Every pixel crafted to perfection across all devices – mobile-first, accessible and blazing fast.", tags:["Tailwind","Bootstrap","CSS Grid"] },
+  { icon:"🗄️", name:"Backend & APIs", desc:"Scalable backend systems, RESTful and GraphQL APIs with secure architecture and optimised performance.", tags:["Node.js",".NET Core","REST","GraphQL"] },
+  { icon:"🛢️", name:"Database Solutions", desc:"Robust database design, optimisation and management for SQL and NoSQL environments.", tags:["MongoDB","MSSQL","SQL Server","Redis"] },
+];
+
+const STACK = [
+  {e:"⚛️",n:"React"},{e:"🅰️",n:"Angular"},{e:"🟢",n:"Node.js"},{e:"💙",n:".NET Core"},{e:"🍃",n:"MongoDB"},{e:"🗃️",n:"MSSQL"},{e:"🔵",n:"SQL Server"},{e:"🔷",n:"TypeScript"},{e:"📦",n:"Next.js"},{e:"🐳",n:"Docker"},{e:"☁️",n:"Azure"},{e:"🔥",n:"Firebase"},
+];
+const STACK2 = [
+  {e:"🎨",n:"Tailwind CSS"},{e:"💅",n:"Styled Comp."},{e:"📡",n:"REST APIs"},{e:"🔗",n:"GraphQL"},{e:"🔐",n:"JWT Auth"},{e:"📱",n:"React Native"},{e:"⚡",n:"Vite"},{e:"🐙",n:"GitHub"},{e:"🔮",n:"Redux"},{e:"🌐",n:"PWA"},{e:"🛡️",n:"ASP.NET"},{e:"📊",n:"Power BI"},
+];
+
+const PORTFOLIO = [
+  {cat:"web",icon:"🏢",title:"Corporate Portal",sub:"Dynamic Business Website",desc:"Full-stack Angular + .NET Core enterprise portal"},
+  {cat:"mobile",icon:"📲",title:"E-Commerce App",sub:"Mobile Application",desc:"React Native cross-platform shopping app"},
+  {cat:"web",icon:"🛒",title:"Online Store",sub:"E-Commerce Platform",desc:"React + Node.js store with payment integration"},
+  {cat:"design",icon:"🎨",title:"Brand Identity",sub:"UI/UX Design",desc:"Complete branding and design system"},
+  {cat:"mobile",icon:"🍕",title:"Food Delivery",sub:"Mobile App",desc:"Full-featured delivery app with tracking"},
+  {cat:"web",icon:"📊",title:"Analytics Dashboard",sub:"Data Visualisation",desc:"Real-time dashboard with MongoDB & React"},
+];
+
+const PROCESS = [
+  {n:"01",t:"Discovery",d:"Understanding your business goals, target audience and project requirements in depth."},
+  {n:"02",t:"Design",d:"Wireframing, prototyping and crafting pixel-perfect UI/UX that converts."},
+  {n:"03",t:"Develop",d:"Clean, scalable code built with the best-fit technology stack for your project."},
+  {n:"04",t:"Test",d:"Rigorous QA across devices, browsers and performance benchmarks."},
+  {n:"05",t:"Launch",d:"Smooth deployment, monitoring and handover with documentation."},
+];
+
+const TESTIMONIALS = [
+  {text:"StarkByte delivered our corporate portal ahead of schedule. The attention to detail in both design and performance was exceptional.",name:"Arun Nair",role:"CEO, TechVentures Kochi",init:"AN"},
+  {text:"Outstanding mobile app development. Our food delivery app works flawlessly on both iOS and Android. Highly recommended!",name:"Priya Menon",role:"Founder, QuickBite",init:"PM"},
+  {text:"The team understood our vision perfectly. The e-commerce platform they built tripled our online sales within 3 months.",name:"Rahul Varma",role:"Director, ShopKerala",init:"RV"},
+];
+
+// ---- HOOKS ----
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.section-reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, {threshold:0.12});
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  });
+}
+
+function useTyping(words, speed=80, pause=1800) {
+  const [text, setText] = useState('');
+  const [wi, setWi] = useState(0);
+  const [typing, setTyping] = useState(true);
+  useEffect(() => {
+    const word = words[wi];
+    if(typing) {
+      if(text.length < word.length) {
+        const t = setTimeout(() => setText(word.slice(0,text.length+1)), speed);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setTyping(false), pause);
+        return () => clearTimeout(t);
+      }
+    } else {
+      if(text.length > 0) {
+        const t = setTimeout(() => setText(text.slice(0,-1)), speed/2);
+        return () => clearTimeout(t);
+      } else {
+        setWi((wi+1)%words.length);
+        setTyping(true);
+      }
+    }
+  },[text,typing,wi]);
+  return text;
+}
+
+// ---- PARTICLES ----
+function Particles() {
+  const particles = Array.from({length:16},(_,i)=>({
+    id:i,
+    left: Math.random()*100+'%',
+    delay: Math.random()*8+'s',
+    dur: (6+Math.random()*8)+'s',
+    size: (2+Math.random()*3)+'px',
+  }));
+  return (
+    <div className="hero-particles">
+      {particles.map(p=>(
+        <div key={p.id} className="particle" style={{
+          left:p.left,bottom:0,
+          width:p.size,height:p.size,
+          animationDelay:p.delay,animationDuration:p.dur
+        }}/>
+      ))}
+    </div>
+  );
+}
+
+// ---- NAVBAR ----
+function Navbar({page, setPage}) {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  },[]);
+  const nav = ['Home','Services','Portfolio','About','Contact'];
+  return (
+    <>
+      <nav className={`navbar${scrolled?' scrolled':''}`}>
+        <div className="nav-logo" onClick={()=>setPage('Home')}>
+          <img src={LOGO_SRC} alt="StarkByte"/>
+          <div className="nav-logo-text"><span>STARK</span><span>BYTE</span></div>
+        </div>
+        <div className="nav-links">
+          {nav.map(n=>(
+            <button key={n} className={`nav-link${page===n?' active':''}`} onClick={()=>setPage(n)}>{n}</button>
+          ))}
+          <button className="nav-cta" onClick={()=>setPage('Contact')}>Get Quote</button>
+        </div>
+        <button className="hamburger" onClick={()=>setMobileOpen(!mobileOpen)}>
+          <span/><span/><span/>
+        </button>
+      </nav>
+      <div className={`mobile-menu${mobileOpen?' open':''}`}>
+        {nav.map(n=>(
+          <button key={n} className="mobile-nav-link" onClick={()=>{setPage(n);setMobileOpen(false);}}>{n}</button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ---- HOME PAGE ----
+function HomePage({setPage}) {
+  const typed = useTyping(['Static Websites','Dynamic Web Apps','Mobile Applications','Full-Stack Solutions','Responsive Designs']);
+  useScrollReveal();
+  const [filter, setFilter] = useState('all');
+  const filtered = filter==='all' ? PORTFOLIO : PORTFOLIO.filter(p=>p.cat===filter);
+
+  return (
+    <div className="page-enter">
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-grid"/>
+        <div className="scanline"/>
+        <Particles/>
+        <div className="hero-content">
+          <div className="hero-badge">◉ NOW ACCEPTING NEW PROJECTS</div>
+          <h1 className="hero-title">
+            <span className="line1">We Build</span>
+            <span className="line2" data-text={typed}>{typed}<span className="cursor"/></span>
+          </h1>
+          <p className="hero-subtitle">StarkByte Solutions — crafting pixel-perfect digital experiences from Ernakulam & Thrissur. Angular, React, Node.js, .NET Core and more. Any stack. Any vision.</p>
+          <div className="hero-btns">
+            <button className="btn-primary" onClick={()=>setPage('Contact')}>Start Your Project</button>
+            <button className="btn-outline" onClick={()=>setPage('Portfolio')}>View Our Work</button>
+          </div>
+          <div className="hero-stats">
+            <div className="stat"><div className="stat-num">2+</div><div className="stat-label">Years Exp.</div></div>
+            <div className="stat"><div className="stat-num">20+</div><div className="stat-label">Projects</div></div>
+            <div className="stat"><div className="stat-num">100%</div><div className="stat-label">Client Sat.</div></div>
+            <div className="stat"><div className="stat-num">∞</div><div className="stat-label">Stacks</div></div>
+          </div>
+        </div>
+        <div className="hero-visual">
+          <div className="hero-ring"/>
+          <div className="hero-ring"/>
+          <div className="hero-ring"/>
+          <img src={LOGO_SRC} className="hero-logo" alt="StarkByte"/>
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className="services" id="services">
+        <div className="section-header section-reveal">
+          <span className="section-tag">// What We Do</span>
+          <h2 className="section-title">Our <span>Services</span></h2>
+          <div className="section-line"/>
+        </div>
+        <div className="services-grid">
+          {SERVICES.map((s,i)=>(
+            <div key={i} className="service-card section-reveal" style={{animationDelay:i*0.1+'s'}}>
+              <span className="service-icon">{s.icon}</span>
+              <div className="service-name">{s.name}</div>
+              <p className="service-desc">{s.desc}</p>
+              <div className="service-tags">{s.tags.map(t=><span key={t} className="service-tag">{t}</span>)}</div>
+              <div className="service-arrow">↗</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TECH STACK */}
+      <section className="tech-section" id="tech">
+        <div className="section-header section-reveal">
+          <span className="section-tag">// Technology</span>
+          <h2 className="section-title">Our Tech <span>Stack</span></h2>
+          <div className="section-line"/>
+        </div>
+        <div className="tech-track section-reveal">
+          <div className="tech-scroll scroll-left">
+            {[...STACK,...STACK].map((t,i)=>(
+              <div key={i} className="tech-pill"><span>{t.e}</span>{t.n}</div>
+            ))}
+          </div>
+        </div>
+        <div className="tech-track section-reveal">
+          <div className="tech-scroll scroll-right">
+            {[...STACK2,...STACK2].map((t,i)=>(
+              <div key={i} className="tech-pill"><span>{t.e}</span>{t.n}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PORTFOLIO PREVIEW */}
+      <section className="portfolio" id="portfolio">
+        <div className="section-header section-reveal">
+          <span className="section-tag">// Our Work</span>
+          <h2 className="section-title">Featured <span>Projects</span></h2>
+          <div className="section-line"/>
+        </div>
+        <div className="portfolio-filters section-reveal">
+          {['all','web','mobile','design'].map(f=>(
+            <button key={f} className={`filter-btn${filter===f?' active':''}`} onClick={()=>setFilter(f)}>{f.toUpperCase()}</button>
+          ))}
+        </div>
+        <div className="portfolio-grid">
+          {filtered.map((p,i)=>(
+            <div key={i} className="portfolio-card section-reveal">
+              <div className="portfolio-img" style={{fontSize:'4rem'}}>{p.icon}</div>
+              <div className="portfolio-overlay">
+                <p className="portfolio-overlay-text">{p.desc}</p>
+              </div>
+              <div className="portfolio-info">
+                <div className="portfolio-title">{p.title}</div>
+                <div className="portfolio-cat">{p.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PROCESS */}
+      <section className="process" id="process">
+        <div className="section-header section-reveal">
+          <span className="section-tag">// How We Work</span>
+          <h2 className="section-title">Our <span>Process</span></h2>
+          <div className="section-line"/>
+        </div>
+        <div className="process-steps">
+          {PROCESS.map((s,i)=>(
+            <div key={i} className="process-step section-reveal" style={{transitionDelay:i*0.15+'s'}}>
+              <div className="step-num">{s.n}</div>
+              <div className="step-title">{s.t}</div>
+              <p className="step-desc">{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="testimonials" id="testimonials">
+        <div className="section-header section-reveal">
+          <span className="section-tag">// Client Voices</span>
+          <h2 className="section-title">What Clients <span>Say</span></h2>
+          <div className="section-line"/>
+        </div>
+        <div className="testi-grid">
+          {TESTIMONIALS.map((t,i)=>(
+            <div key={i} className="testi-card section-reveal" style={{transitionDelay:i*0.15+'s'}}>
+              <div className="testi-stars">★★★★★</div>
+              <p className="testi-text">"{t.text}"</p>
+              <div className="testi-author">
+                <div className="testi-avatar">{t.init}</div>
+                <div>
+                  <div className="testi-name">{t.name}</div>
+                  <div className="testi-role">{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA BANNER */}
+      <section style={{background:'linear-gradient(135deg,#1a0005,var(--dark2))',padding:'80px 40px',textAlign:'center',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',inset:0,backgroundImage:'repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(224,0,15,0.03) 10px,rgba(224,0,15,0.03) 20px)'}}/>
+        <div style={{position:'relative',zIndex:1}}>
+          <div className="section-tag" style={{marginBottom:16}}>// Let's Build Together</div>
+          <h2 className="section-title" style={{marginBottom:20}}>Ready to Start Your <span>Project?</span></h2>
+          <p style={{color:'var(--silver)',maxWidth:500,margin:'0 auto 36px',lineHeight:1.8}}>From a simple landing page to a full-scale enterprise application — we've got you covered. Based in Ernakulam & Thrissur.</p>
+          <div style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
+            <button className="btn-primary" onClick={()=>setPage('Contact')}>Contact Us Now</button>
+            <a href="tel:8086370353" style={{textDecoration:'none'}}><button className="btn-outline">📞 8086370353</button></a>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ---- SERVICES PAGE ----
+function ServicesPage() {
+  useScrollReveal();
+  return (
+    <div className="page-enter" style={{paddingTop:70}}>
+      <section style={{background:'var(--dark2)',padding:'100px 40px 60px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(224,0,15,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(224,0,15,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+        <div style={{position:'relative',zIndex:1,textAlign:'center'}}>
+          <span className="section-tag">// What We Offer</span>
+          <h1 className="section-title" style={{fontSize:'clamp(2.5rem,5vw,4rem)'}}>Our <span>Services</span></h1>
+          <p style={{color:'var(--silver)',maxWidth:600,margin:'24px auto 0',lineHeight:1.8}}>Full-cycle digital development — from concept to deployment. We work with any technology stack to bring your vision to life.</p>
+        </div>
+      </section>
+      <section style={{padding:'80px 40px',background:'var(--dark)'}}>
+        <div className="services-grid" style={{maxWidth:1200,margin:'0 auto'}}>
+          {SERVICES.map((s,i)=>(
+            <div key={i} className="service-card section-reveal" style={{transitionDelay:i*0.1+'s'}}>
+              <span className="service-icon">{s.icon}</span>
+              <div className="service-name">{s.name}</div>
+              <p className="service-desc">{s.desc}</p>
+              <div className="service-tags">{s.tags.map(t=><span key={t} className="service-tag">{t}</span>)}</div>
+              <div className="service-arrow">↗</div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section style={{padding:'80px 40px',background:'var(--dark2)'}}>
+        <div className="section-header section-reveal"><span className="section-tag">// Tech</span><h2 className="section-title">Technology <span>Stack</span></h2><div className="section-line"/></div>
+        <div className="tech-track section-reveal"><div className="tech-scroll scroll-left">{[...STACK,...STACK].map((t,i)=><div key={i} className="tech-pill"><span>{t.e}</span>{t.n}</div>)}</div></div>
+        <div className="tech-track section-reveal" style={{marginTop:16}}><div className="tech-scroll scroll-right">{[...STACK2,...STACK2].map((t,i)=><div key={i} className="tech-pill"><span>{t.e}</span>{t.n}</div>)}</div></div>
+      </section>
+    </div>
+  );
+}
+
+// ---- PORTFOLIO PAGE ----
+function PortfolioPage() {
+  useScrollReveal();
+  const [filter, setFilter] = useState('all');
+  const filtered = filter==='all' ? PORTFOLIO : PORTFOLIO.filter(p=>p.cat===filter);
+  return (
+    <div className="page-enter" style={{paddingTop:70}}>
+      <section style={{background:'var(--dark2)',padding:'100px 40px 60px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(224,0,15,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(224,0,15,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+        <div style={{position:'relative',zIndex:1,textAlign:'center'}}>
+          <span className="section-tag">// Our Work</span>
+          <h1 className="section-title" style={{fontSize:'clamp(2.5rem,5vw,4rem)'}}>Project <span>Portfolio</span></h1>
+          <p style={{color:'var(--silver)',maxWidth:600,margin:'24px auto 0',lineHeight:1.8}}>A showcase of websites, apps and digital solutions we've crafted for clients across Kerala and beyond.</p>
+        </div>
+      </section>
+      <section style={{padding:'80px 40px',background:'var(--dark)'}}>
+        <div className="portfolio-filters section-reveal">
+          {['all','web','mobile','design'].map(f=>(
+            <button key={f} className={`filter-btn${filter===f?' active':''}`} onClick={()=>setFilter(f)}>{f.toUpperCase()}</button>
+          ))}
+        </div>
+        <div className="portfolio-grid" style={{maxWidth:1200,margin:'0 auto'}}>
+          {filtered.map((p,i)=>(
+            <div key={i} className="portfolio-card section-reveal" style={{transitionDelay:i*0.1+'s'}}>
+              <div className="portfolio-img">{p.icon}</div>
+              <div className="portfolio-overlay"><p className="portfolio-overlay-text">{p.desc}</p></div>
+              <div className="portfolio-info">
+                <div className="portfolio-title">{p.title}</div>
+                <div className="portfolio-cat">{p.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ---- ABOUT PAGE ----
+function AboutPage() {
+  useScrollReveal();
+  return (
+    <div className="page-enter" style={{paddingTop:70}}>
+      <section style={{background:'var(--dark2)',padding:'100px 40px 60px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(224,0,15,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(224,0,15,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+        <div style={{position:'relative',zIndex:1,textAlign:'center'}}>
+          <span className="section-tag">// Who We Are</span>
+          <h1 className="section-title" style={{fontSize:'clamp(2.5rem,5vw,4rem)'}}>About <span>StarkByte</span></h1>
+        </div>
+      </section>
+      <section className="about">
+        <div className="about-inner">
+          <div className="about-img-wrap section-reveal">
+            <img src={DEV_SRC} className="about-img" alt="Sreekanth – Developer" style={{borderRadius:4}}/>
+          </div>
+          <div className="about-text">
+            <div className="section-header section-reveal">
+              <span className="section-tag">// The Developer</span>
+              <h2 className="section-title">Hi, I'm <span>Sreekanth</span></h2>
+              <div className="section-line"/>
+            </div>
+            <p className="about-desc section-reveal">Founder & Lead Developer at StarkByte Solutions. With 2+ years of hands-on experience in full-stack web and mobile development, I build digital products that are fast, scalable, and visually outstanding.</p>
+            <p className="about-desc section-reveal" style={{marginTop:12}}>Based in Kerala (Ernakulam & Thrissur), I work with startups and businesses to turn ideas into live products — from simple landing pages to complex enterprise applications.</p>
+            <div className="about-skills section-reveal">
+              {['React','Angular','Node.js','.NET Core','MongoDB','MSSQL','SQL Server','TypeScript','React Native','REST APIs','CSS/Tailwind','Git/GitHub'].map(s=>(
+                <span key={s} className="skill-chip">{s}</span>
+              ))}
+            </div>
+            <div className="about-info section-reveal">
+              <div className="info-item"><span className="info-icon">📍</span><div><span className="info-label">Location</span><span className="info-val">Ernakulam & Thrissur, Kerala</span></div></div>
+              <div className="info-item"><span className="info-icon">📞</span><div><span className="info-label">Phone</span><span className="info-val">8086370353</span></div></div>
+              <div className="info-item"><span className="info-icon">⏱️</span><div><span className="info-label">Experience</span><span className="info-val">2+ Years</span></div></div>
+              <div className="info-item"><span className="info-icon">✅</span><div><span className="info-label">Status</span><span className="info-val">Open to Projects</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style={{padding:'80px 40px',background:'var(--dark2)'}}>
+        <div className="section-header section-reveal"><span className="section-tag">// Why Us</span><h2 className="section-title">Why Choose <span>StarkByte</span></h2><div className="section-line"/></div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:24,maxWidth:1100,margin:'0 auto'}}>
+          {[
+            {i:"🚀",t:"Fast Delivery",d:"Quick turnaround without compromising on quality or attention to detail."},
+            {i:"🎯",t:"Any Stack",d:"We adapt to your needs — React, Angular, .NET, MongoDB or whatever you require."},
+            {i:"💬",t:"Clear Communication",d:"Regular updates, transparent pricing and honest timelines throughout the project."},
+            {i:"🛡️",t:"Quality Code",d:"Clean, maintainable, well-documented code following industry best practices."},
+          ].map((w,i)=>(
+            <div key={i} className="service-card section-reveal" style={{transitionDelay:i*0.1+'s'}}>
+              <span className="service-icon">{w.i}</span>
+              <div className="service-name">{w.t}</div>
+              <p className="service-desc">{w.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ---- CONTACT PAGE ----
+function ContactPage() {
+  useScrollReveal();
+  const [form, setForm] = useState({name:'',email:'',phone:'',service:'',msg:''});
+  const [sent, setSent] = useState(false);
+  const handle = e => setForm({...form,[e.target.name]:e.target.value});
+  const submit = () => { if(form.name&&form.email) setSent(true); };
+  return (
+    <div className="page-enter" style={{paddingTop:70}}>
+      <section style={{background:'var(--dark2)',padding:'100px 40px 60px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(224,0,15,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(224,0,15,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+        <div style={{position:'relative',zIndex:1,textAlign:'center'}}>
+          <span className="section-tag">// Reach Us</span>
+          <h1 className="section-title" style={{fontSize:'clamp(2.5rem,5vw,4rem)'}}>Get In <span>Touch</span></h1>
+          <p style={{color:'var(--silver)',maxWidth:600,margin:'24px auto 0',lineHeight:1.8}}>Have a project in mind? Let's talk. We're always open to new opportunities and challenges.</p>
+        </div>
+      </section>
+      <section className="contact">
+        <div className="contact-inner">
+          <div className="contact-info section-reveal">
+            <h3>Let's Build Something <span style={{color:'var(--red)'}}>Great</span></h3>
+            <p>We're based in Kerala and ready to take on exciting new projects. Reach out via phone, email or fill the form — we respond within 24 hours.</p>
+            <div className="contact-items">
+              <div className="contact-item"><div className="contact-icon">📞</div><div><span className="contact-label">Phone / WhatsApp</span><span className="contact-val">8086370353</span></div></div>
+              <div className="contact-item"><div className="contact-icon">📍</div><div><span className="contact-label">Location</span><span className="contact-val">Ernakulam & Thrissur, Kerala, India</span></div></div>
+              <div className="contact-item"><div className="contact-icon">🏢</div><div><span className="contact-label">Company</span><span className="contact-val">StarkByte Solutions</span></div></div>
+              <div className="contact-item"><div className="contact-icon">⏰</div><div><span className="contact-label">Availability</span><span className="contact-val">Mon–Sat, 9 AM – 7 PM</span></div></div>
+            </div>
+          </div>
+          <div className="section-reveal">
+            {sent ? (
+              <div style={{textAlign:'center',padding:'60px 20px',background:'var(--dark3)',border:'1px solid rgba(224,0,15,0.3)'}}>
+                <div style={{fontSize:'3rem',marginBottom:16}}>✅</div>
+                <h3 style={{fontFamily:'var(--font-head)',color:'var(--silver2)',marginBottom:8}}>Message Sent!</h3>
+                <p style={{color:'var(--silver)'}}>Thank you, we'll get back to you within 24 hours.</p>
+                <button className="btn-primary" style={{marginTop:24}} onClick={()=>setSent(false)}>Send Another</button>
+              </div>
+            ) : (
+              <div className="contact-form">
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Your Name *</label><input className="form-input" name="name" value={form.name} onChange={handle} placeholder="John Doe"/></div>
+                  <div className="form-group"><label className="form-label">Email *</label><input className="form-input" name="email" value={form.email} onChange={handle} placeholder="john@example.com"/></div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Phone</label><input className="form-input" name="phone" value={form.phone} onChange={handle} placeholder="+91 XXXXX XXXXX"/></div>
+                  <div className="form-group"><label className="form-label">Service Needed</label>
+                    <select className="form-input" name="service" value={form.service} onChange={handle} style={{cursor:'pointer'}}>
+                      <option value="">Select a Service</option>
+                      <option>Static Website</option>
+                      <option>Dynamic Web App</option>
+                      <option>Mobile Application</option>
+                      <option>Backend / API</option>
+                      <option>Database Solution</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group"><label className="form-label">Your Message</label><textarea className="form-textarea" name="msg" value={form.msg} onChange={handle} placeholder="Tell us about your project..."/></div>
+                <button className="btn-primary" onClick={submit} style={{alignSelf:'flex-start'}}>Send Message ↗</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ---- FOOTER ----
+function Footer({setPage}) {
+  return (
+    <footer className="footer">
+      <div className="footer-inner">
+        <div className="footer-brand">
+          <img src={LOGO_SRC} alt="StarkByte"/>
+          <p>StarkByte Solutions — crafting high-performance digital products from Kerala. Static, dynamic, mobile: any stack, any scale.</p>
+          <div style={{marginTop:20,display:'flex',gap:12}}>
+            <a href="tel:8086370353" style={{textDecoration:'none'}}><button className="btn-primary" style={{fontSize:'0.8rem',padding:'8px 16px'}}>📞 Call Now</button></a>
+          </div>
+        </div>
+        <div className="footer-col">
+          <h4>Company</h4>
+          <div className="footer-links">
+            {['Home','About','Services','Portfolio','Contact'].map(p=>(
+              <button key={p} className="footer-link" onClick={()=>setPage(p)}>{p}</button>
+            ))}
+          </div>
+        </div>
+        <div className="footer-col">
+          <h4>Services</h4>
+          <div className="footer-links">
+            {['Static Websites','Dynamic Web Apps','Mobile Apps','Responsive Design','Backend APIs','Database Solutions'].map(s=>(
+              <button key={s} className="footer-link" onClick={()=>setPage('Services')}>{s}</button>
+            ))}
+          </div>
+        </div>
+        <div className="footer-col">
+          <h4>Contact</h4>
+          <div className="footer-links" style={{gap:16}}>
+            <div style={{color:'var(--silver)',fontSize:'0.9rem'}}>📞 8086370353</div>
+            <div style={{color:'var(--silver)',fontSize:'0.9rem'}}>📍 Ernakulam, Kerala</div>
+            <div style={{color:'var(--silver)',fontSize:'0.9rem'}}>📍 Thrissur, Kerala</div>
+            <div style={{color:'var(--silver)',fontSize:'0.9rem'}}>🕐 Mon–Sat 9AM–7PM</div>
+          </div>
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <div className="footer-copy">© 2026 <span>StarkByte Solutions</span>. All rights reserved. Built with ❤️ in Kerala.</div>
+        <div className="social-links">
+          <div className="social-btn" href="https://www.linkedin.com/in/sreekanth-vj-b87838329/"
+  target="_blank"
+  rel="noopener noreferrer">in</div>
+          <div className="social-btn">fb</div>
+          <div className="social-btn" href="https://www.linkedin.com/in/sreekanth-vj-b87838329/"
+  target="_blank"
+  rel="noopener noreferrer">ig</div>
+          <div className="social-btn">wa</div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ---- LOADER ----
+function Loader({done}) {
+  return (
+    <div className={`loader${done?' hidden':''}`}>
+      <img src={LOGO_SRC} className="loader-logo" alt="StarkByte"/>
+      <div className="loader-bar"/>
+      <div className="loader-text">INITIALISING...</div>
+    </div>
+  );
+}
+
+// ---- APP ----
+function App() {
+  const [page, setPage] = useState('Home');
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setLoaded(true), 1800); return () => clearTimeout(t); },[]);
+  const navigate = (p) => { setPage(p); window.scrollTo({top:0,behavior:'smooth'}); };
+  const renderPage = () => {
+    switch(page) {
+      case 'Home':      return <HomePage setPage={navigate}/>;
+      case 'Services':  return <ServicesPage/>;
+      case 'Portfolio': return <PortfolioPage/>;
+      case 'About':     return <AboutPage/>;
+      case 'Contact':   return <ContactPage/>;
+      default:          return <HomePage setPage={navigate}/>;
+    }
+  };
+  return (
+    <>
+      <Loader done={loaded}/>
+      <Navbar page={page} setPage={navigate}/>
+      <main>{renderPage()}</main>
+      <Footer setPage={navigate}/>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
